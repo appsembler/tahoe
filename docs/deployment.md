@@ -1,13 +1,21 @@
-# AMC deployment
+# Tahoe deployment
+
+Tahoe's infrastructure code currently lives in 2 repos. The terraform code lives in the
+[amc repo](https://github.com/appsembler/amc/tree/develop/deploy/terraform) as does the Ansible
+code for deploying Tahoe's AMC component.
+
+The Ansible code for deploying the edX component lives in the [configuration repo](https://github.com/appsembler/configuration/tree/appsembler/ficus/master). We use the `appsembler/ficus/master` branch like
+all the other custom deployments.
 
 
-## Terraform
+## Terrforming the infrastructure
 
 To provision new infrastructure on GCP we use Terraform. This will only set up the
 infrastructure and will *not* deploy anything to those machines, that's what Ansible
 is for.
 
-- Install Terraform `0.7.x`.
+`NOTE`: This will create the infrastructure for both the AMC and edX components.
+
 - To provision a staging env run the following
 
 ```bash
@@ -29,21 +37,30 @@ ENVIRONMENT=staging make apply
 
 `NOTE`: Make sure your  using the `appsembler-amc` GCP project.
 
-## Ansible
+`TODO`: We should refactor this to use the amc ax plugin
 
-We use Ansible to provision our code onto the above created infrastructure.
+## Deploying the AMC component
 
-`NOTE`: This assumes you have `virtualenvwrapper` installed locally.
+The AMC component get's auto deployed to staging on every push (via CircleCI). If you wish to deploy
+manually run the following commands
 
 ```bash
-mkvirtualenv amc
-workon amc
-pip install -r requirements/local.txt
-# or just install Ansible like so
-pip install ansible==2.1.2.0
-cd deploy
+cd amc/deploy
 ENVIRONMENT=staging make provision
 ```
 
-Make sure to set the correct ENVIRONMENT. Accepted values are `staging` and `prod` (*not* production).
+`TODO`: We should get rid of the makefile and the existing ax plugin to do this in the future.
+
+## Deploying the edX component
+
+We use Ansible to provision our code onto the above created infrastructure.
+
+`NOTE`: This assumes you have `virtualenvwrapper` and `ax` installed locally.
+`NOTE2`: It also assumes you have the amc ax plugin installed. See
+[here](https://github.com/appsembler/amc/tree/develop/ax_plugins).
+
+```bash
+workon ax
+ax amc deploy-edx --ansible-tag="deploy"
+```
 
