@@ -1,14 +1,25 @@
-# AMC - Appsembler Management Console
+# Tahoe
 
+Tahoe is Appsembler’s new all-in-one SaaS platform that lets you build your own branded Open edX site in minutes.
 
-## Installation
+It has several components of which the most important ones are [AMC - Appsembler Management
+Console](https://github.com/appsembler/amc) and [edX
+Platform](https://github.com/appsembler/edx-platform/tree/appsembler/amc/develop).
 
-For AMC to work properly, an edX instance also has to be up and running. This section has instructions how to get the whole setup running, both AMC and edX.
+Since you need both components installed locally for the system to work see below for instructions on how
+to set them up.
+
+## Development
 
 ### AMC
+
+### AMC
+
 Requirements:
 
-* pip: `easy_install pip`
+* Python3: `apt-get install python3`
+* pip: `apt-get install python3-pip`
+* virtualenvwrapper: `apt-get install virtualenvwrapper`
 * node.js (preferably 4.x.x or 5.x.x)
     * on OS X: `brew install node && npm install -g yarn`
     * on Linux: [read instructions](https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions)
@@ -23,14 +34,8 @@ Requirements:
     - using virtualenv:
 
             cd amc/
-            virtualenv env
-            source env/bin/activate
-
-    - if you're using pyenv and pyenv-virtualenv (as you probably should):
-
-            pyenv-virtualenv -p python2.7 amc
-            cd amc/
-            pyenv local amc
+            mkvirtualenv -p `which python3` amc
+            workon amc
 
 3. Install the requirements: `pip install -r requirements/local.txt`
 4. Run the migrations: `python manage.py migrate --settings=config.settings.local`
@@ -58,9 +63,9 @@ Requirements:
 
 9. Use `make help` to list all commands.
 
-10. Follow the rest of the edX Vagrant based setup (for the edxapp part of AMC)
+10. Follow the rest of the edX setup (for the edxapp part of AMC)
 
-### edX-platform
+### edX Platform
 
 Requirements:
 
@@ -144,7 +149,7 @@ AMC uses py.test to run unit tests and run PyLint on all the files. All the test
 
 To run all the tests:
 
-    py.test
+    py.test # or make test if running the docker setup
 
 To run all tests with code coverage data:
 
