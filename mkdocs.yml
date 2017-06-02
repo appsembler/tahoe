@@ -1,0 +1,10 @@
+---
+site_name: Tahoe
+site_description: "Tahoe docs"
+theme: readthedocs
+pages:
+  - Home: index.md
+  - Deployment: deployment.md
+  - Frontend: frontend.md
+  - Servers: servers.md
+
