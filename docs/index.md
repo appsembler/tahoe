@@ -13,7 +13,7 @@ to set them up.
 
 ### AMC
 
-### AMC
+#### Native env
 
 Requirements:
 
@@ -23,10 +23,6 @@ Requirements:
 * node.js (preferably 4.x.x or 5.x.x)
     * on OS X: `brew install node && npm install -g yarn`
     * on Linux: [read instructions](https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions)
-
-## Instructions:
-
-### Native env
 
 1. Clone the project: `git clone git@github.com:appsembler/amc.git`
 2. Create a virtualenv for the project:
@@ -44,7 +40,7 @@ Requirements:
 7. In that second shell, run the webpack for asset compilation: `yarn start`
 8. Happy hacking!
 
-### Docker based dev env
+#### Docker based dev env
 
 1. On Linux install docker and docker-compose or just
 2. If on Mac, install Docker for Mac.
