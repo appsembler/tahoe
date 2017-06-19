@@ -1,6 +1,5 @@
 ﻿# Tahoe Tiers
 
-
 Go to [AMC django admin](https://amc-app.appsembler.com/admin).
 
 `NOTE`: You can only log in if your account is a superuser, if not then either
