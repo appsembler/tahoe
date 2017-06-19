@@ -7,4 +7,5 @@ pages:
   - Deployment: deployment.md
   - Frontend: frontend.md
   - Servers: servers.md
+  - Tiers: tiers.md
 
