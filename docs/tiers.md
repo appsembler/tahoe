@@ -11,20 +11,20 @@ superuser.
 To See Tiers data scroll down to the "Tiers" app:
 
 
-[tiers img 1](img/tiers1.png)
+![tiers img 1](img/tiers1.png)
 
 
 Click on Tiers and you should see a list of all Organizations that have been
 assigned a Tier:
 
 
-[tiers img 2](img/tiers2.png)
+![tiers img 2](img/tiers2.png)
 
 In the top right corner you can tie an Organization to a Tier. Click on "Add
 Tier":
 
 
-[tiers img 3](img/tiers3.png)
+![tiers img 3](img/tiers3.png)
 
 
 In the dropdown lists, select an Organization and a Tier (currently we only
