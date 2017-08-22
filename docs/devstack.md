@@ -45,3 +45,13 @@ Then you can do:
 cd /edx/app/edxapp/edx-platform
 paver devstack lms --settings=devstack_appsembler
 ```
+
+## Troubleshooting
+On some versions Vagrant and OS X 10.12, there is a problem with NFS, Vagrant and file permissions. If you need to rerun `vagrant provision` for some reason and encounter an error when installing edx_ansible requirements, do the following:
+
+```
+vagrant ssh
+sudo chmod -R 777 /edx/app/edx_ansible/venvs/edx_ansible/lib/python2.7/site-packages/
+```
+
+And rerun provisioning.
