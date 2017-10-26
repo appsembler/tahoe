@@ -1,6 +1,12 @@
-# Tahoe devstack setup
+# Tahoe dev environment setup
 
-```
+## AMC
+
+## edX
+
+For setting up edX for Tahoe, we need to use our custom server-vars.yml file and modified Vagrantfile which allows the inclusion of those variables.
+
+```bash
 mkdir ficus_devstack
 cd ficus_devstack
 // go to https://github.com/noderabbit-team/edx-configs/blob/master/appsembler/amc/dev/files/server-vars.yml
@@ -13,11 +19,11 @@ curl "<paste URL here>" -o Vagrantfile
 OPENEDX_RELEASE="open-release/ficus.3" vagrant up
 ```
 
-After it completes, do the following:
+We then need to checkout the custom theme. Do the following:
 
-```
+```bash
 cd themes
-git clone https://github.com/appsembler/edx-theme-codebase.git 
+git clone https://github.com/appsembler/edx-theme-codebase.git
 cd edx-theme-codebase
 git checkout ficus/master
 git clone https://github.com/appsembler/edx-theme-customers.git customer_specific
@@ -30,7 +36,7 @@ vim /edx/app/edxapp/lms.env.json
 ```
 
 Make sure that the following settings are set like this:
-```
+```json
 "COMPREHENSIVE_THEME_DIR": "/edx/app/edxapp/themes",
 "COMPREHENSIVE_THEME_DIRS": [
     "/edx/app/edxapp/themes"
@@ -41,15 +47,15 @@ Make sure that the following settings are set like this:
 
 Then you can do:
 
-```
+```bash
 cd /edx/app/edxapp/edx-platform
 paver devstack lms --settings=devstack_appsembler
 ```
 
-## Troubleshooting
+### Troubleshooting
 On some versions Vagrant and OS X 10.12, there is a problem with NFS, Vagrant and file permissions. If you need to rerun `vagrant provision` for some reason and encounter an error when installing edx_ansible requirements, do the following:
 
-```
+```bash
 vagrant ssh
 sudo chmod -R 777 /edx/app/edx_ansible/venvs/edx_ansible/lib/python2.7/site-packages/
 ```
