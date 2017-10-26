@@ -2,6 +2,45 @@
 
 ## AMC
 
+AMC uses python 3.5 so be sure to create a virtualenv using the 3.x version of python. It also requires node 6.x or higher and
+
+```bash
+git clone https://github.com/appsembler/amc.git
+cd amc
+cp env.example .env
+```
+
+Edit the variables in `.env` to match your dev setting, you'll probably want to change the DB info.
+AMC assumes the use of [autoenv](https://github.com/kennethreitz/autoenv). If you're not using it, you'll have to add `export` in front of all the variables in `.env`
+
+```bash
+# if using autoenv
+cd .. && cd amc
+
+# if not
+source .env
+```
+
+Install the requirements and run the migrations:
+
+```bash
+pip install -r requirements/local.txt
+python amc/manage.py migrate
+cd frontend
+yarn # or npm install
+```
+
+To run the AMC app locally, open two shells in your terminal and do the following:
+
+```bash
+# shell 1
+python manage.py runserver 0.0.0.0:9000
+
+# shell 2
+cd frontend
+npm start
+```
+
 ## edX
 
 For setting up edX for Tahoe, we need to use our custom server-vars.yml file and modified Vagrantfile which allows the inclusion of those variables.
