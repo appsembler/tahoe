@@ -64,3 +64,8 @@ workon ax
 ax amc deploy-edx --ansible-tag="deploy"
 ```
 
+Alternatively, you can run the full command using ax:
+
+```bash
+ax --work-dir /Users/<user>/Documents/projekti/GitHub/appsembler ansible -c appsembler/amc -e prod --ansible-ask-sudo-pass --ansible-user <user> --ansible-nginx-ssl-certificate /keybase/private/<path_to_cert>/tahoe.appsembler.com/tahoe.appsembler.com.combined.crt --ansible-nginx-ssl-key /keybase/private/<path_to_cert>/tahoe.appsembler.com/tahoe_prod.key --edx-release ficus --ansible-vault-password-file ../../.vault_pass --configuration-branch appsembler/ficus/master --ansible-playbook amc.yml --ansible-tag deploy provision
+```
