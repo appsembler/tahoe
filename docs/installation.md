@@ -48,7 +48,7 @@ For setting up edX for Tahoe, we need to use our custom server-vars.yml file and
 ```bash
 mkdir ficus_devstack
 cd ficus_devstack
-// go to https://github.com/noderabbit-team/edx-configs/blob/master/appsembler/amc/dev/files/server-vars.yml
+// go to https://github.com/appsembler/edx-configs/blob/master/appsembler/amc/dev/files/server-vars.yml
 // and click the "view raw" link and copy the URL
 mkdir src
 curl "<paste URL here>" -o src/server-vars.yml
