@@ -3,16 +3,16 @@
 This API allows external systems (like AMC) to manage the SAML configuration in the Open edX platform. At the moment we've two groups of endpoints in this API, one to control the edX configuration as a SAML Service Provider, and another to control the configuration of the associated SAML Identity Providers.
 
 ## Django configuration models
-The SAML (and OAuth TBD in the near future) configuration are implemented in an edX application called `third_party_auth` locate in `/common/djangoapps/third_party_auth`. The models associated to our API are based in the **Django configuration models**.
+The SAML (and OAuth TBD in the near future) configuration are implemented in an edX application called `third_party_auth` located in `/common/djangoapps/third_party_auth`. The models associated to our API are based in the **Django configuration models**.
 
 Documentation: https://github.com/edx/django-config-models
 
-Django configuration models provide a base class to inherit from, so we can take the config model behaviour in our models. Basically after inherit from the class you write a normal Django class, then every time you edit an object a new record is created, so you can store and history and you can revert to that configuration. When you define a class inheriting from configuration fields you need to define a `KEY_FIELDS` attribute, this is what it makes you configuration unique. **Django configuration models** Also provides an object manager `current_set()` that based on the `KEY_FIELDS` will return the last version of each configuration.
+Django configuration models provide a base class to inherit from, so we can take the config model behaviour in our models. Basically after inheriting from the class you write a normal Django class, then every time you edit an object a new record is created, so you can store and history and you can revert to that configuration. When you define a class inheriting from configuration fields you need to define a `KEY_FIELDS` attribute, this is what it makes you configuration unique. **Django configuration models** Also provides an object manager `current_set()` that is based on the `KEY_FIELDS` will return the last version of each configuration.
 
-All the classes that we're going to be interacting with the API are based configuration models, so the API only allows to list all objects, list current, post and delete, we don't methods available to update, since always a new one is going to be created.
+All the classes that we're going to be interacting with the API are based configuration models, so the API only allows to list all objects, list current, post and delete, we don't methods available to update, since a new one is always going to be created.
 
 ## SAML configuration Endpoints
-This set of endpoint allow to manage the edX configuration as a SAML Service Provider.
+This set of endpoint allows managing the edX configuration as a SAML Service Provider.
 
 More info: https://en.wikipedia.org/wiki/Service_provider_(SAML)
 
