@@ -5,7 +5,6 @@ theme: readthedocs
 pages:
   - Home: index.md
   - Deployment: deployment.md
-  - Frontend: frontend.md
   - Servers: servers.md
   - Tiers: tiers.md
   - "Custom Domains": domains.md
