@@ -8,5 +8,4 @@ pages:
   - Frontend: frontend.md
   - Servers: servers.md
   - Tiers: tiers.md
-  - Custom Domains: custom-domains.md
-
+  - "Custom Domains": custom-domains.md
