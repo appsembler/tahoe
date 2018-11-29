@@ -25,16 +25,26 @@ curl -L https://raw.githubusercontent.com/appsembler/configuration/appsembler/fi
 ```
 
 https://github.com/appsembler/configuration/blob/appsembler/ficus/master/vagrant/release/devstack/Vagrantfile.amc
+
 4. Install the Vagrant vbguest plugin.
 ```
 vagrant plugin install vagrant-vbguest
 ```
-5. Create the Devstack virtual machine.
+5. Create the server vars file for the Ansible provisioning
+```
+mkdir devstack/src
+vi devstack/src/server-vars.yml
+```
+and copy the content of the [example server-vars.yml file](server-vars.yml.md).
+The piece that you need to fill out, it's the `EDXAPP_GIT_IDENTITY` that is used to clone and checkout the [edx-theme-codebase](https://github.com/appsembler/edx-theme-codebase) repository.
+Here is the documentation to generate a new deploy key and add it to github: [https://developer.github.com/v3/guides/managing-deploy-keys/#deploy-keys](https://developer.github.com/v3/guides/managing-deploy-keys/#deploy-keys)
+
+6. Create the Devstack virtual machine.
 ```
 vagrant up
 ```
 The first time you create the Devstack virtual machine, Vagrant downloads the base box, which has a file size of about 4GB. If you destroy and recreate the virtual machine, Vagrant re-uses the box it downloaded. See Vagrant’s documentation on boxes for more information.
-6. When prompted, enter the administrator password for your local computer.
+7. When prompted, enter the administrator password for your local computer.
 
 ### Run LMS and Studio
 In order to start the LMS and Studio development servers you need to run the following commands.
