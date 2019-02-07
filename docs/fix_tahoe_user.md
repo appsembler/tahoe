@@ -6,67 +6,96 @@
 
 All the AMC users have match edX user (email match). This user is able to perform operation from AMC, using an access and refresh token. During the sign up/user creation process, those tokens are created in the edX end, and assigned (and saved) to the AMC user.
 
-In order to check if the user has tokens assigned, go to https://amc-app.appsembler.com/admin/auth/user/ and search the user by email.
-
-Open the user and go to the section *OAUTH TOKENS*
-
-Even the tokens exists or not, now we need to check the edX end.
-
-## Check Access and Refresh tokens in the edX end
-
-The Django's OAuth2 Admin interface in edX is pretty bad for search, so the best way to make sure that a token exists or not in edX is to ssh into the VM and run this snippet.
+## Ensure Access and Refresh Tokens exists in the LMS
 
 1. SSH into any of the production edxapp VMs
 2. Load the `edxapp` user and virtualenv
 ```
-sudo su edxapp -s /bin/bash
-source /edx/app/edxapp/edxapp_env
-cd ~/edx-platform
+sudo -s -- sudo -Hsu edxapp
 ```
+
 3. Load the python shell
 ```
 python manage.py lms --settings=amc shell
 ```
+
 4. Run the following script
-```
-from provider.oauth2.models import AccessToken, RefreshToken
+```python
+from datetime import timedelta
+from provider.oauth2.models import AccessToken, RefreshToken, Client
+from django.db.models.query import Q
+from provider.utils import now
 from django.contrib.auth.models import User
+from organizations.models import UserOrganizationMapping, Organization, UserSiteMapping
 
-user_email = "user@email.com"
 
-u = User.objects.get(email=user_email)
-token = AccessToken.objects.get(user=u)
+def get_by_org_name(org_name):
+    org = Organization.objects.get(Q(name=org_name) | Q(short_name=org_name))
+    assert org.sites.count() == 1, 'Should have one and only one site.'
+    site = org.sites.all()[0]
+    return org, site
+    
+
+def ensure_access_token(email, org_name):
+    url = 'https://amc-app.appsembler.com/complete/edx-oidc/'
+    client = Client.objects.get(redirect_uri=url)
+    u = User.objects.get(email=email)
+    org, site = get_by_org_name(org_name)
+    UserOrganizationMapping.objects.get_or_create(user=u, organization=org)
+    UserSiteMapping.objects.get_or_create(user=u, site=site)
+    try:
+        access = AccessToken.objects.get(user=u, client=client)
+    except AccessToken.DoesNotExist:
+        access = AccessToken.objects.create(
+            user=u,
+            client=client,
+            expires=now() + timedelta(days=366),
+        )
+        print('New AccessToken created')
+    print('AccessToken:', access)
+    try:
+        refresh = RefreshToken.objects.get(user=u, access_token=access, client=client)
+    except RefreshToken.DoesNotExist:
+        refresh = RefreshToken.objects.create(
+            user=u,
+            client=client,
+            access_token=access,
+        )
+        print('New RefreshToken created')
+    print('RefreshToken:', refresh)
+
+
+def ensure_amc_admin(email, org_name):
+    u = User.objects.get(email=email)
+    org, site = get_by_org_name(org_name)
+    om, _ = UserOrganizationMapping.objects.get_or_create(user=u, organization=org)
+    om.is_active = True
+    om.is_amc_admin = True
+    om.save()
+    #
+    sm, _ = UserSiteMapping.objects.get_or_create(user=u, site=site)
+    sm.is_active = True
+    sm.is_amc_admin = True
+    sm.save()
+
+
+ensure_access_token('mat@gmail.com', 'delta-rook')
 ```
 
-After perform this step we can face different scenarios, all of theme are covered bellow.
+If the user has no organization, please assign them to one. See the Case 2 section below.
 
-### Case 1 The token doesn't exists
-If you get the following error:
-```
->>> token = AccessToken.objects.get(user=u)
-Traceback (most recent call last):
-  File "<console>", line 1, in <module>
-  File "/edx/app/edxapp/venvs/edxapp/local/lib/python2.7/site-packages/django/db/models/manager.py", line 127, in manager_method
-    return getattr(self.get_queryset(), name)(*args, **kwargs)
-  File "/edx/app/edxapp/venvs/edxapp/local/lib/python2.7/site-packages/django/db/models/query.py", line 334, in get
-    self.model._meta.object_name
-DoesNotExist: AccessToken matching query does not exist.
-```
-This means that the tokens hasn't been created in the edX end. We need to create the token manually in the Django's admin.
+This script, when successful should print the user organization ina addition to the access
+and refresh tokens e.g.:
 
-#### Create the Refresh and Access token
-1. Go to `https://tahoe.appsembler.com/admin/oauth2/refreshtoken/`
-2. Click on *Add refresh token*
-3. Select the User from DropDown, after picking the User you can use the edit icon to verify that you choose the correct one.
-4. Save the auto generated Refresh Token or set your own one.
-5. In the Access Token field, click on the plus icon to create a new one.
-6. Save the auto generated Access Token or set your own one.
-7. Select the `https://amc-app.appsembler.com/complete/edx-oidc/` OAuth client.
-8. Set the expiration to one year in the future.
-9. For scope leave the default `read` value.
-10. Save
-11. Now back in the refresh token form, Select the `https://amc-app.appsembler.com/complete/edx-oidc/` OAuth client again.
-12. Leave the `Expired` checkbox unchecked.
+```
+Organization for MHaton is delta-rook
+AccessToken xzxzxxzxzxxzxzxxzxzxxzxzx
+New RefreshToken created
+RefreshToken: xzxzxxzxzxxzxzxxzxzxxzxzx
+```
+
+The function `ensure_access_token` can be called multiple times without a problem, since it won't override
+existing tokens.
 
 #### Set the new Token in AMC app
 1. Go to `https://amc-app.appsembler.com/admin/auth/user/` and search for the user by email.
@@ -78,15 +107,11 @@ This means that the tokens hasn't been created in the edX end. We need to create
 
 Now try to hijack the user, the spinning box should be gone. If the problem persists, we need to go to the next session.
 
-## Check user site
+### Case 2: Check user site
 If after fix the user tokens, the problem persists, it's probably because the user isn't assigned to any site in edX.
 
-### Check the user organisation in AMC
-1. Go to `https://amc-app.appsembler.com/admin/organizations/organization/`
-2. Search for the Organisation by name, for example: *Redis* or *Cybereason*.
-3. Open the organisation and check the user is inside org, so it's basically inside the *Chosen Users* box. If is not, check for the user and add it.
+Use the `ensure_amc_admin` function to connect a user with an organization and its stie.
 
-### Check for the user organisation in edX
-1. Go to `https://tahoe.appsembler.com/admin/sites/site/`
-2. Search for the Organisation by name, for example: *Redis* or *Cybereason*.
-3. Check that the user is listed in the *User Mapping object* and is marked as an AMC admin.
+```python
+ensure_amc_admin('mat@gmail.com', 'delta-rook')
+```
